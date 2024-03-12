@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+
+{% block more_css %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+{% endblock more_css %}
+
+{% block content %}
+
+<div class="container-fluid my-4">
+
+    <div class="row my-4">
+        <div class="col mx-auto">
+
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-center">Dashboard</h3>
+                            <div class="mb-4 text-end">
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#upload-csv">
+                                   Upload CSV
+                                </button>
+                                <a href="{{ url_for('export_csv') }}" class="btn btn-warning">CSV EXPORT</a>
+                                <a href="{{ url_for('create_member') }}" class="btn btn-primary">Add Member</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <table class="table" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>Banner ID.</th>
+                                        <th>Tiger Email</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Phone</th>
+                                        <th>Personal Email</th>
+                                        <th>Current City</th>
+                                        <th>Current Employer</th>
+                                        <th>Graduation Date</th>
+                                        <th>LinkedIn</th>
+                                        <th>Graduating Employer</th>
+                                        <th>Internship 1</th>
+                                        <th>Internship 1</th>
+                                        <th>Internship 1</th>
+                                        <th>Additional Degrees</th>
+                                        <th>Address</th>
+                                        
+                                        <th>Actions</th>
+                                  
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for member in members %}
+                                    <tr>
+                                        <td>{{ member.banner_id }}</td>
+                                        <td>{{ member.tiger_email }}</td>
+                                        <td>{{ member.first_name }}</td>
+                                        <td>{{ member.last_name }}</td>
+                                        <td>{{ member.phone }}</td>
+                                        <td>{{ member.personal_email }}</td>
+                                        <td>{{ member.current_city }}</td>
+                                        <td>{{ member.current_employer }}</td>
+                                        <td>{{ member.graduation_date }}</td>
+                                        <td>{{ member.linkedin }}</td>
+                                        <td>{{ member.graduating_employer }}</td>
+                                        <td>{{ member.internship1 }}</td>
+                                        <td>{{ member.internship2 }}</td>
+                                        <td>{{ member.internship3 }}</td>
+                                        <td>{{ member.additional_degrees }}</td>
+                                        <td>{{ member.address }}</td>
+                                        
+                                        <td>
+                                            <a href="{{ url_for('edit_member', member_id=member.id) }}" class="btn btn-info btn-sm">Update</a>
+                                            
+
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#member-{{member.id}}">
+                                                Remove
+                                            </button>
+
+
+                                            
+                                            
+                                        </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+
+{% for member in members %}
+  <!-- Modal -->
+  <div class="modal fade" id="member-{{member.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Delete member</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Do you want to delete this member "{{member.first_name}}" ?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form action="{{ url_for('delete_member', member_id=member.id) }}" method="POST">
+                
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endfor %}
+
+
+<!--
+    upload modal start
+-->
+<!-- Modal -->
+<div class="modal fade" id="upload-csv" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload CSV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('upload_csv') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Choose CSV File</label>
+                <input class="form-control" type="file" id="formFile" name="file" accept=".csv" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--
+    upload modal end
+-->
+
+
+{% endblock %}
+
+{% block more_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+<script>
+    $(document).ready( function () {
+        $('#myTable').DataTable({
+            scrollX: true,
+        });
+    } );
+</script>
+
+{% endblock more_js %}
